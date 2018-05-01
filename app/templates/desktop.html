@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+
+                    {% block title %}
+                    <h1>虚拟桌面</h1>
+                        {% endblock %}
+
+{% block global %}
+        <div id="global">
+            <div class="container-fluid">
+                <div class="row">
+                    {% for file in files %}
+                    <div class="col-sm-3">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                               <a data-toggle="collapse" href="#add{{ file[3] }}"><button type="button" class="btn btn-turquoise">新增</button></a>
+                                <a href="{{ url_for('panel.file_cat',   desktop_id=desktop_id, filename = file[3], suffix = file[4]) }}"><button type="button" class="btn btn-info">查看</button></a>
+                                    <a href="{{ url_for('panel.file_rename', desktop_id=desktop_id, filename = file[3], suffix = file[4]) }}"><button type="button" class="btn btn-success">修改</button></a>
+                                    <a href="{{ url_for('panel.file_remove', desktop_id=desktop_id, filename = file[3], suffix = file[4]) }}"><button type="button" class="btn btn-gray">删除</button></a>
+                            </div>
+                            <div class="panel-body">
+
+
+
+		<div id="add{{ file[3] }}">
+			<div class="panel-body">
+				Nihil anim keffiyeh helvetica, craft beer labore wes anderson
+				cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
+				vice lomo.
+			</div>
+		</div>
+                                <h3 style="margin-top:0">  <small>  File Name：{{ file[2] }}</small></h3>
+                                 <h3>  <small> File Size：{{ file[1] }}</small></h3>
+                                  <h3> <small> File Owner: {{ file[0] }}</small></h3>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+
+                    {% endfor %}
+	<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+
+                </div>
+
+            </div>
+        </div>
+{% endblock %}
+
