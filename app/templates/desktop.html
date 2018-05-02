@@ -7,14 +7,28 @@
 
 {% block global %}
         <div id="global">
-            <div class="container-fluid">
+
+            <div class="container-fluid"><br>
+                <form method="post" action="{{ url_for('panel.file_add', desktop_id=desktop_id) }}" >
+                <div class="input-group">
+
+                                    <input type="text" name="name" class="form-control" placeholder="New File Name">
+
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="submit">增加文件</button>
+                                    </span>
+
+
+                                </div>
+                </form>
                 <div class="row">
                     {% for file in files %}
                     <div class="col-sm-3">
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                               <a data-toggle="collapse" href="#add{{ file[3] }}"><button type="button" class="btn btn-turquoise">新增</button></a>
-                                <a href="{{ url_for('panel.file_cat',   desktop_id=desktop_id, filename = file[3], suffix = file[4]) }}"><button type="button" class="btn btn-info">查看</button></a>
+                               <a href="{{ url_for('panel.file_cat', desktop_id=desktop_id, filename = file[3], suffix = file[4]) }}"><button type="button" class="btn btn-info">查看</button></a>
+                               <a data-toggle="collapse" href="#rename{{ file[3] }}"><button type="button" class="btn btn-turquoise">重命</button></a>
+
                                     <a href="{{ url_for('panel.file_rename', desktop_id=desktop_id, filename = file[3], suffix = file[4]) }}"><button type="button" class="btn btn-success">修改</button></a>
                                     <a href="{{ url_for('panel.file_remove', desktop_id=desktop_id, filename = file[3], suffix = file[4]) }}"><button type="button" class="btn btn-gray">删除</button></a>
                             </div>
@@ -22,12 +36,18 @@
 
 
 
-		<div id="add{{ file[3] }}">
-			<div class="panel-body">
-				Nihil anim keffiyeh helvetica, craft beer labore wes anderson
-				cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
-				vice lomo.
-			</div>
+		<div id="rename{{ file[3] }}" class="panel-collapse collapse">
+        <form method="post" action="{{ url_for('panel.file_rename', desktop_id=desktop_id, filename = file[3], suffix = file[4]) }}" >
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="name" placeholder="New Name">
+
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="submit">重命名</button>
+                                    </span>
+
+                                </div>
+        </form>
+
 		</div>
                                 <h3 style="margin-top:0">  <small>  File Name：{{ file[2] }}</small></h3>
                                  <h3>  <small> File Size：{{ file[1] }}</small></h3>

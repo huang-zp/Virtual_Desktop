@@ -1,5 +1,5 @@
 import paramiko
-from flask import Blueprint, render_template, redirect, url_for
+from flask import Blueprint, render_template, redirect, url_for, request
 from flask_login import login_required, current_user
 from app.models import User_Desktop, Desktop
 from app.engines import db
@@ -20,7 +20,7 @@ def desktop_panel():
 
 
 @panel.route('/desktop/<int:desktop_id>')
-def desktop(desktop_id):
+def desktop_file(desktop_id):
     desktop = db.session.query(Desktop).filter(Desktop.id == desktop_id).first()
 
     # 创建SSH对象
@@ -30,10 +30,8 @@ def desktop(desktop_id):
     # 连接服务器
     ssh.connect(hostname=desktop.server, port=desktop.port, username=desktop.user, password=desktop.server_password)
     # 执行命令
-    if 'Mac' in desktop.system:
-        stdin, stdout, stderr = ssh.exec_command('cd Desktop && ls -l')
-    else:
-        stdin, stdout, stderr = ssh.exec_command('cd Desktop && ls -l')
+
+    stdin, stdout, stderr = ssh.exec_command('cd Desktop && ls -lt')
     # 获取结果
     result = stdout.read().decode()
 
@@ -51,16 +49,24 @@ def desktop(desktop_id):
             suffix = info_list[-1].split('.')[1]
         else:
             filename = info_list[-1]
-            suffix = ''
+            suffix = 'null'
         files.append([info_list[3], info_list[4], info_list[-1], filename, suffix])
 
     return render_template('desktop.html', files=files, desktop_id=desktop.id)
 
 
+@panel.route('/desktop/cat/<int:desktop_id>/<string:filename>')
 @panel.route('/desktop/cat/<int:desktop_id>/<string:filename>/<string:suffix>')
-def file_cat(desktop_id, filename, suffix):
+def file_cat(desktop_id, filename, suffix=None):
     desktop = db.session.query(Desktop).filter(Desktop.id == desktop_id).first()
-    file = filename + '.'+ suffix
+
+    if suffix == 'null':
+        return redirect(url_for('panel.file_cat', desktop_id=desktop_id, filename=filename))
+
+    if suffix:
+        file_name = filename + '.' + suffix
+    else:
+        file_name = filename
     # 创建SSH对象
     ssh = paramiko.SSHClient()
     # 允许连接不在known_hosts文件上的主机
@@ -68,7 +74,7 @@ def file_cat(desktop_id, filename, suffix):
     # 连接服务器
     ssh.connect(hostname=desktop.server, port=desktop.port, username=desktop.user, password=desktop.server_password)
     # 执行命令
-    stdin, stdout, stderr = ssh.exec_command('cd Desktop && cat {}'.format(file))
+    stdin, stdout, stderr = ssh.exec_command('cd Desktop && cat {}'.format(file_name))
     # 获取结果
     result = stdout.read().decode()
 
@@ -79,12 +85,80 @@ def file_cat(desktop_id, filename, suffix):
 
     text = '<p><small>' + result.replace('\n', '<br>').replace(' ', '&nbsp;') + '</small></p>'
 
-    print(text)
     return render_template('file_cat.html', text=text)
 
 
+@panel.route('/desktop/remove/<int:desktop_id>/<string:filename>')
 @panel.route('/desktop/remove/<int:desktop_id>/<string:filename>/<string:suffix>')
-def file_remove(desktop_id, filename, suffix):
+def file_remove(desktop_id, filename, suffix=None):
+    desktop = db.session.query(Desktop).filter(Desktop.id == desktop_id).first()
+
+    if suffix == 'null':
+        return redirect(url_for('panel.file_remove', desktop_id=desktop_id, filename=filename))
+
+    if suffix:
+        file_name = filename + '.' + suffix
+    else:
+        file_name = filename
+    # 创建SSH对象
+    ssh = paramiko.SSHClient()
+    # 允许连接不在known_hosts文件上的主机
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    # 连接服务器
+    ssh.connect(hostname=desktop.server, port=desktop.port, username=desktop.user, password=desktop.server_password)
+
+    ssh.exec_command('cd Desktop && rm {}'.format(file_name))
+
+    ssh.close()
+
+    return redirect(url_for('panel.desktop_file', desktop_id=desktop_id))
+
+
+@panel.route('/desktop/rename/<int:desktop_id>/<string:filename>', methods=['POST'])
+@panel.route('/desktop/rename/<int:desktop_id>/<string:filename>/<string:suffix>', methods=['POST'])
+def file_rename(desktop_id, filename, suffix=None):
+    if request.method == 'POST':
+        name = request.form['name']
+    else:
+        return redirect(url_for('panel.desktop', desktop_id=desktop_id))
+    desktop = db.session.query(Desktop).filter(Desktop.id == desktop_id).first()
+
+    if suffix == 'null':
+        return redirect(url_for('panel.file_rename', desktop_id=desktop_id, filename=filename))
+
+    if suffix:
+        file_name = filename + '.' + suffix
+    else:
+        file_name = filename
+    # 创建SSH对象
+    ssh = paramiko.SSHClient()
+    # 允许连接不在known_hosts文件上的主机
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    # 连接服务器
+    ssh.connect(hostname=desktop.server, port=desktop.port, username=desktop.user, password=desktop.server_password)
+    # 执行命令
+    ssh.exec_command('cd Desktop && mv {0} {1}'.format(file_name, name))
+
+    # 关闭连接
+    ssh.close()
+
+    return redirect(url_for('panel.desktop_file', desktop_id=desktop_id))
+
+
+
+
+
+
+
+
+
+@panel.route('/desktop/add/<int:desktop_id>', methods=['POST'])
+def file_add(desktop_id):
+    if request.method == 'POST':
+        name = request.form['name']
+    else:
+        return redirect(url_for('panel.desktop', desktop_id=desktop_id))
+
     desktop = db.session.query(Desktop).filter(Desktop.id == desktop_id).first()
 
     # 创建SSH对象
@@ -94,89 +168,8 @@ def file_remove(desktop_id, filename, suffix):
     # 连接服务器
     ssh.connect(hostname=desktop.server, port=desktop.port, username=desktop.user, password=desktop.server_password)
     # 执行命令
-    if 'Mac' in desktop.system:
-        stdin, stdout, stderr = ssh.exec_command('cd Desktop && ls -l')
-    else:
-        stdin, stdout, stderr = ssh.exec_command('cd Desktop && ls -l')
-    # 获取结果
-    result = stdout.read().decode()
+    ssh.exec_command('cd Desktop && echo '' > {}'.format(name))
 
-    # 获取错误提示（stdout、stderr只会输出其中一个）
-    err = stderr.read()
-    # 关闭连接
     ssh.close()
-    files = []
-    result_lists = result.split('\n')
-    for result in result_lists[1:-1]:
-        info = ' '.join(result.split())
-        info_list = info.split(' ')
 
-        files.append([info_list[3], info_list[4], info_list[-1]])
-
-    return render_template('desktop.html', files=files, desktop_id=desktop.id)
-
-
-@panel.route('/desktop/rename/<int:desktop_id>/<string:filename>/<string:suffix>')
-def file_rename(desktop_id, filename, suffix):
-    desktop = db.session.query(Desktop).filter(Desktop.id == desktop_id).first()
-
-    # 创建SSH对象
-    ssh = paramiko.SSHClient()
-    # 允许连接不在known_hosts文件上的主机
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    # 连接服务器
-    ssh.connect(hostname=desktop.server, port=desktop.port, username=desktop.user, password=desktop.server_password)
-    # 执行命令
-    if 'Mac' in desktop.system:
-        stdin, stdout, stderr = ssh.exec_command('cd Desktop && ls -l')
-    else:
-        stdin, stdout, stderr = ssh.exec_command('cd Desktop && ls -l')
-    # 获取结果
-    result = stdout.read().decode()
-
-    # 获取错误提示（stdout、stderr只会输出其中一个）
-    err = stderr.read()
-    # 关闭连接
-    ssh.close()
-    files = []
-    result_lists = result.split('\n')
-    for result in result_lists[1:-1]:
-        info = ' '.join(result.split())
-        info_list = info.split(' ')
-
-        files.append([info_list[3], info_list[4], info_list[-1]])
-
-    return render_template('desktop.html', files=files, desktop_id=desktop.id)
-
-
-@panel.route('/desktop/add/<int:desktop_id>/<string:filename>/<string:suffix>')
-def file_add(desktop_id, filename, suffix):
-    desktop = db.session.query(Desktop).filter(Desktop.id == desktop_id).first()
-
-    # 创建SSH对象
-    ssh = paramiko.SSHClient()
-    # 允许连接不在known_hosts文件上的主机
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    # 连接服务器
-    ssh.connect(hostname=desktop.server, port=desktop.port, username=desktop.user, password=desktop.server_password)
-    # 执行命令
-    if 'Mac' in desktop.system:
-        stdin, stdout, stderr = ssh.exec_command('cd Desktop && ls -l')
-    else:
-        stdin, stdout, stderr = ssh.exec_command('cd Desktop && ls -l')
-    # 获取结果
-    result = stdout.read().decode()
-
-    # 获取错误提示（stdout、stderr只会输出其中一个）
-    err = stderr.read()
-    # 关闭连接
-    ssh.close()
-    files = []
-    result_lists = result.split('\n')
-    for result in result_lists[1:-1]:
-        info = ' '.join(result.split())
-        info_list = info.split(' ')
-
-        files.append([info_list[3], info_list[4], info_list[-1]])
-
-    return render_template('desktop.html', files=files, desktop_id=desktop.id)
+    return redirect(url_for('panel.desktop_file', desktop_id=desktop_id))

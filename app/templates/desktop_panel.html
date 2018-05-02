@@ -11,7 +11,7 @@
                <div class="row cm-fix-height">
 
                    {% for desktop in desktops %}
-                 <a href="{{ url_for('panel.desktop', desktop_id=desktop.id) }}">   <div class="col-sm-6">
+                 <a href="{{ url_for('panel.desktop_file', desktop_id=desktop.id) }}">   <div class="col-sm-6">
                         <div class="panel panel-default">
                             <div class="panel-heading"><strong>{{ desktop.name }}</strong> </div>
 
