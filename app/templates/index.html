@@ -44,18 +44,18 @@
         </div>
         <div class="row cm-fix-height">
             <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
-                <a href="dashboard-sales.html" class="panel panel-default thumbnail cm-thumbnail">
+                <a href="{{ url_for('vd.index') }}" class="panel panel-default thumbnail cm-thumbnail">
                     <div class="panel-body text-center">
                         <span class="svg-48">
                             <img src="{{ url_for('static', filename='assets/img/sf/house.svg') }}" alt="控制面板">
                         </span>
                         <h4>虚拟系统</h4> <small>可视化虚拟桌面系统.</small>
 
-                    </div>
+                    </div>  
                 </a>
             </div>
             <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
-                <a href="notepad.html" class="panel panel-default thumbnail cm-thumbnail">
+                <a href="{{ url_for('panel.desktop_panel') }}" class="panel panel-default thumbnail cm-thumbnail">
                     <div class="panel-body text-center">
                         <span class="svg-48">
                             <img src="{{ url_for('static', filename='assets/img/sf/dashboard.svg') }}" alt="notepad">
@@ -66,7 +66,7 @@
                 </a>
             </div>
             <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
-                <a href="components-text.html" class="panel panel-default thumbnail cm-thumbnail">
+                <a href="{{ url_for('desktop_operate.desktop_list') }}" class="panel panel-default thumbnail cm-thumbnail">
                     <div class="panel-body text-center">
                         <span class="svg-48">
                             <img src="{{ url_for('static', filename='assets/img/sf/brick.svg') }}" alt="brick">
@@ -77,7 +77,7 @@
                 </a>
             </div>
             <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
-                <a href="layouts-breadcrumb1.html" class="panel panel-default thumbnail cm-thumbnail">
+                <a href="{{ url_for('info.user_info') }}" class="panel panel-default thumbnail cm-thumbnail">
                     <div class="panel-body text-center">
                         <span class="svg-48">
                             <img src="{{ url_for('static', filename='assets/img/sf/window-layout.svg') }}" alt="window-layout">
@@ -88,7 +88,7 @@
                 </a>
             </div>
             <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
-                <a href="ico-sf.html" class="panel panel-default thumbnail cm-thumbnail">
+                <a href="{{ url_for('user_operate.user_list') }}" class="panel panel-default thumbnail cm-thumbnail">
                     <div class="panel-body text-center">
                         <span class="svg-48">
                             <img src="{{ url_for('static', filename='assets/img/sf/lock-open.svg') }}" alt="cat">
@@ -99,7 +99,7 @@
                 </a>
             </div>
             <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
-                <a href="login.html" class="panel panel-default thumbnail cm-thumbnail">
+                <a href="{{ url_for('log_operate.log_list') }}" class="panel panel-default thumbnail cm-thumbnail">
                     <div class="panel-body text-center">
                         <span class="svg-48">
                             <img src="{{ url_for('static', filename='assets/img/sf/notepad.svg') }}" alt="lock-open">
