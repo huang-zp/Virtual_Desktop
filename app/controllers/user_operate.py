@@ -33,10 +33,10 @@ def user_change(user_id):
 
         email = request.form['email']
         role = request.form['role']
-        # if '管理' in role:
-        #     role = 1
-        # else:
-        #     role = 2
+        if '管理' in role:
+            role = 1
+        else:
+            role = 2
         password = request.form['password']
         if name == '' or email == '' or role == '' or password == '':
             flash(" 检查某些字段是否为空")
