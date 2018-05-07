@@ -94,12 +94,11 @@ def file_remove(desktop_id, filename, suffix=None):
     desktop = db.session.query(Desktop).filter(Desktop.id == desktop_id).first()
 
     if suffix == 'null':
-        return redirect(url_for('panel.file_remove', desktop_id=desktop_id, filename=filename))
-
-    if suffix:
-        file_name = filename + '.' + suffix
-    else:
         file_name = filename
+
+    else:
+        file_name = filename + '.' + suffix
+    print(file_name)
     # 创建SSH对象
     ssh = paramiko.SSHClient()
     # 允许连接不在known_hosts文件上的主机
@@ -124,7 +123,7 @@ def file_rename(desktop_id, filename, suffix=None):
     desktop = db.session.query(Desktop).filter(Desktop.id == desktop_id).first()
 
     if suffix == 'null':
-        return redirect(url_for('panel.file_rename', desktop_id=desktop_id, filename=filename))
+        return redirect(url_for('panel.file_rename_no_suffix', desktop_id=desktop_id, filename=filename, new_name=name))
 
     if suffix:
         file_name = filename + '.' + suffix
@@ -138,6 +137,26 @@ def file_rename(desktop_id, filename, suffix=None):
     ssh.connect(hostname=desktop.server, port=desktop.port, username=desktop.user, password=desktop.server_password)
     # 执行命令
     ssh.exec_command('mv {0} {1}'.format(file_name, name))
+
+    # 关闭连接
+    ssh.close()
+
+    return redirect(url_for('panel.desktop_file', desktop_id=desktop_id))
+
+
+@panel.route('/desktop/rename/<int:desktop_id>/<string:filename>/<string:new_name>', methods=['GET'])
+def file_rename_no_suffix(desktop_id, filename, new_name):
+
+    desktop = db.session.query(Desktop).filter(Desktop.id == desktop_id).first()
+
+    # 创建SSH对象
+    ssh = paramiko.SSHClient()
+    # 允许连接不在known_hosts文件上的主机
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    # 连接服务器
+    ssh.connect(hostname=desktop.server, port=desktop.port, username=desktop.user, password=desktop.server_password)
+    # 执行命令
+    ssh.exec_command('mv {0} {1}'.format(filename, new_name))
 
     # 关闭连接
     ssh.close()
@@ -163,6 +182,57 @@ def file_add(desktop_id):
     # 执行命令
     ssh.exec_command('echo '' > {}'.format(name))
 
+    ssh.close()
+
+    return redirect(url_for('panel.desktop_file', desktop_id=desktop_id))
+
+
+@panel.route('/desktop/change/<int:desktop_id>/<string:filename>', methods=['POST'])
+@panel.route('/desktop/change/<int:desktop_id>/<string:filename>/<string:suffix>', methods=['POST'])
+def file_change(desktop_id, filename, suffix=None):
+    if request.method == 'POST':
+        name = request.form['text']
+    else:
+        return redirect(url_for('panel.desktop', desktop_id=desktop_id))
+    desktop = db.session.query(Desktop).filter(Desktop.id == desktop_id).first()
+
+    if suffix == 'null':
+        return redirect(url_for('panel.file_rename_no_suffix', desktop_id=desktop_id, filename=filename, new_name=name))
+
+    if suffix:
+        file_name = filename + '.' + suffix
+    else:
+        file_name = filename
+    # 创建SSH对象
+    ssh = paramiko.SSHClient()
+    # 允许连接不在known_hosts文件上的主机
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    # 连接服务器
+    ssh.connect(hostname=desktop.server, port=desktop.port, username=desktop.user, password=desktop.server_password)
+    # 执行命令
+    ssh.exec_command('mv {0} {1}'.format(file_name, name))
+
+    # 关闭连接
+    ssh.close()
+
+    return redirect(url_for('panel.desktop_file', desktop_id=desktop_id))
+
+
+@panel.route('/desktop/change/<int:desktop_id>/<string:filename>/<string:new_name>', methods=['GET'])
+def file_change_no_suffix(desktop_id, filename, new_name):
+
+    desktop = db.session.query(Desktop).filter(Desktop.id == desktop_id).first()
+
+    # 创建SSH对象
+    ssh = paramiko.SSHClient()
+    # 允许连接不在known_hosts文件上的主机
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    # 连接服务器
+    ssh.connect(hostname=desktop.server, port=desktop.port, username=desktop.user, password=desktop.server_password)
+    # 执行命令
+    ssh.exec_command('mv {0} {1}'.format(filename, new_name))
+
+    # 关闭连接
     ssh.close()
 
     return redirect(url_for('panel.desktop_file', desktop_id=desktop_id))

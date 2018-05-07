@@ -33,12 +33,10 @@ def user_change(user_id):
 
         email = request.form['email']
         role = request.form['role']
-        print(role)
-        if role == '管理员':
-
-            role = 1
-        else:
-            role = 2
+        # if '管理' in role:
+        #     role = 1
+        # else:
+        #     role = 2
         password = request.form['password']
         if name == '' or email == '' or role == '' or password == '':
             flash(" 检查某些字段是否为空")
@@ -46,7 +44,7 @@ def user_change(user_id):
 
         user.name = name
         user.email = email
-        user.role_id = role
+        user.role_id = int(role)
         user.password = password
 
         db.session.add(user)
@@ -63,10 +61,10 @@ def user_add():
 
         email = request.form['email']
         role = request.form['role']
-        if role == '管理员':
-            role = 1
-        else:
-            role = 2
+        # if '管理' in role:
+        #     role = 1
+        # else:
+        #     role = 2
         password = request.form['password']
         if name == '' or email == '' or role == '' or password == '':
             flash(" 检查某些字段是否为空")
@@ -75,7 +73,7 @@ def user_add():
         user = User()
         user.name = name
         user.email = email
-        user.role = role
+        user.role_id = int(role)
         user.password = password
 
         db.session.add(user)
