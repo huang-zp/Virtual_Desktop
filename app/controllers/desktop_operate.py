@@ -113,3 +113,6 @@ def desktop_change(desktop_id):
         db.session.commit()
         return redirect(url_for('desktop_operate.desktop_list'))
     return render_template('desktop_change.html', desktop=desktop)
+
+
+
