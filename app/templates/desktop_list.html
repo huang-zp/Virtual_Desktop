@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+
+        {% block header %}
+            <header id="cm-header">
+            <nav class="cm-navbar cm-navbar-primary">
+                <div class="btn btn-primary md-menu-white hidden-md hidden-lg" data-toggle="cm-menu"></div>
+                <div class="cm-flex">
+                    {% block title %}
+                    <h1>Home</h1>
+                        {% endblock %}
+                    <form id="cm-search" action="index.html" method="get">
+                        <input type="search" name="q" autocomplete="off" placeholder="Search...">
+                    </form>
+                </div>
+                <div class="pull-right">
+                    <div id="cm-search-btn" class="btn btn-primary md-search-white" data-toggle="cm-search"></div>
+                </div>
+
+                <div class="dropdown pull-right">
+                    <button class="btn btn-primary md-account-circle-white" data-toggle="dropdown"></button>
+                    <ul class="dropdown-menu">
+
+                        {% if current_user.is_authenticated %}
+                        <li class="disabled text-center">
+                            <a style="cursor:default;"><strong>{{ current_user.name }}</strong></a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#"><i class="fa fa-fw fa-user"></i> Profile</a>
+                        </li>
+
+                        <li>
+                            <a href="{{ url_for('auth.logout') }}"><i class="fa fa-fw fa-sign-out"></i> Sign out</a>
+                        </li>
+                        {% else %}
+                        <li class="divider"></li>
+                        <li>
+                            <a href="{{ url_for('auth.register') }}"><i class="fa fa-fw fa-download"></i> Register</a>
+                        </li>
+
+                        <li>
+                            <a href="{{ url_for('auth.login') }}"><i class="fa fa-fw fa-sign-out"></i> Sign in</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </nav>
+            <nav class="cm-navbar cm-navbar-default cm-navbar-slideup">
+    <div class="cm-flex">
+        <div class="nav-tabs-container">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="{{ url_for('desktop_operate.desktop_list') }}">桌面列表</a></li>
+                <li><a href="{{ url_for('desktop_operate.desktop_add') }}">添加桌面</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+        </header>
+        {% endblock %}
+    {% block navbar %}
+class="cm-no-transition cm-2-navbar"
+{% endblock %}
+
+
+
+
+{% block global %}
+        <div id="global">
+            <div class="container-fluid">
+
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">当前用户所管理的所有桌面</div>
+                            <div class="panel-body">
+                                <table class="table table-bordered table-hover">
+
+                                    <thead>
+                                        <tr>
+                                            <th>桌面序号</th>
+                                            <th>创建时间</th>
+                                            <th>更新时间</th>
+                                            <th>桌面昵称</th>
+                                            <th>桌面描述</th>
+                                            <th>服务器IP</th>
+                                            <th>服务器端口</th>
+                                            <th>服务器系统</th>
+                                            <th>服务器用户</th>
+                                            <th>操作桌面</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for desktop in desktops %}
+                                        <tr>
+                                            <th scope="row">{{ loop.index }}</th>
+                                            <td>{{ desktop.create_time|string|truncate(19, True, '') }}</td>
+                                            <td>{{ desktop.update_time|string|truncate(19, True, '') }}</td>
+                                            <td>{{ desktop.name }}</td>
+                                            <td>{{ desktop.description }}</td>
+                                            <td>{{ desktop.server }}</td>
+                                            <td>{{ desktop.port }}</td>
+                                            <td>{{ desktop.system }}</td>
+                                            <td>{{ desktop.user }}</td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">管理 <span class="caret"></span></button>
+                                                    <ul class="dropdown-menu" role="menu">
+                                                    <li><a href="{{ url_for('desktop_operate.desktop_change', desktop_id=desktop.id) }}">修改桌面</a></li>
+                                                    <li><a href="{{ url_for('desktop_operate.desktop_delete', desktop_id=desktop.id) }}">删除桌面</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+             <footer class="cm-footer"><span class="pull-left">Powered By MagicShell</span><span class="pull-right">Copyright &copy; HUANGZP 2018</span></footer>
+        </div>
+{% endblock %}
+

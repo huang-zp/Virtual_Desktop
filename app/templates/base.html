@@ -20,7 +20,9 @@
         {% endblock %}
 
     </head>
-    <body class="cm-no-transition cm-1-navbar">
+
+
+    <body     {% block navbar %} class="cm-no-transition cm-1-navbar" {% endblock %}>
         {% block menu %}
             <div id="cm-menu">
             <nav class="cm-navbar cm-navbar-primary">
@@ -34,8 +36,8 @@
                             <li class="active"><a href="{{ url_for('vd.index') }}" class="sf-house">虚拟系统</a></li>
                             {% if current_user.is_authenticated %}
                             <li><a href="{{ url_for('panel.desktop_panel') }}" class="sf-dashboard">我的桌面</a></li>
-                            <li><a href="#" class="sf-brick">桌面管理</a></li>
-                            <li><a href="#" class="sf-window-layout">个人中心</a></li>
+                            <li><a href="{{ url_for('desktop_operate.desktop_list') }}" class="sf-brick">桌面管理</a></li>
+                            <li><a href="{{ url_for('info.user_info') }}" class="sf-window-layout">个人中心</a></li>
                             {% endif %}
                             {% if current_user.role_id == 1 %}
                             <li><a href="#" class="sf-lock-open">用户管理</a></li>

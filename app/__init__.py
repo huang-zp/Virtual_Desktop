@@ -7,7 +7,7 @@ from logging.handlers import TimedRotatingFileHandler
 from app.models import User, Role
 from app.engines import db
 from flask import Flask, jsonify, request, g, json
-from app.controllers import auth, vd, panel
+from app.controllers import auth, vd, panel, desktop_operate, info
 
 from flask_login import LoginManager
 # from app.cache import cache
@@ -15,6 +15,7 @@ from flask_login import LoginManager
 project_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if project_path not in sys.path:
     sys.path.insert(0, project_path)
+
 
 def create_app():
     """Create Flask app."""
@@ -36,6 +37,8 @@ def create_app():
     app.register_blueprint(auth)
     app.register_blueprint(vd)
     app.register_blueprint(panel)
+    app.register_blueprint(desktop_operate)
+    app.register_blueprint(info)
 
     # cache.init_app(app)
 
