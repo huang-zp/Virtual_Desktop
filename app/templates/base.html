@@ -41,7 +41,7 @@
                             {% endif %}
                             {% if current_user.role_id == 1 %}
                             <li><a href="{{ url_for('user_operate.user_list') }}" class="sf-lock-open">用户管理</a></li>
-                            <li><a href="#" class="sf-notepad">日志管理</a></li>
+                            <li><a href="{{ url_for('log_operate.log_list') }}" class="sf-notepad">日志管理</a></li>
                             {% endif %}
                         </ul>
                     </div>

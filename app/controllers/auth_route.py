@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app.engines import db
-from app.models import User
-
+from app.models import User, Log
+from flask_login import login_required, current_user
 from flask_login import login_user, logout_user, login_required
 auth = Blueprint('auth', __name__, url_prefix='')
 param_location = ('json', )
@@ -18,6 +18,11 @@ def login():
         if user:
             if user.password == password:
                 login_user(user, remember=True)
+                log = Log()
+                log.user = user.name
+                log.operate = '帐号登录'
+                db.session.add(log)
+                db.session.commit()
                 return redirect(url_for('vd.index'))
             else:
                 flash("密码错误，再试一次")
@@ -31,6 +36,11 @@ def login():
 @auth.route('/logout', methods=['POST', 'GET'])    # 用户登出请求处理
 @login_required
 def logout():
+    log = Log()
+    log.user = current_user.name
+    log.operate = '帐号登出'
+    db.session.add(log)
+    db.session.commit()
     logout_user()
     return redirect(url_for('auth.login'))
 
@@ -60,6 +70,10 @@ def register():
         user.role_id = 2
         db.session.add(user)
         db.session.commit()
-
+        log = Log()
+        log.user = name
+        log.operate = '帐号注册'
+        db.session.add(log)
+        db.session.commit()
         return redirect(url_for('auth.login'))
     return render_template('register.html')
