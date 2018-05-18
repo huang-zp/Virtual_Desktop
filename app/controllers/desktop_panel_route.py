@@ -31,10 +31,11 @@ def desktop_file(desktop_id):
     ssh.connect(hostname=desktop.server, port=desktop.port, username=desktop.user, password=desktop.server_password)
     # 执行命令
 
-    stdin, stdout, stderr = ssh.exec_command('ls -lt')
+    stdin, stdout, stderr = ssh.exec_command('cd desktop && ls -lt')
     # 获取结果
     result = stdout.read().decode()
 
+    print(result, '---------')
     # 获取错误提示（stdout、stderr只会输出其中一个）
     err = stderr.read()
     # 关闭连接
@@ -74,7 +75,7 @@ def file_cat(desktop_id, filename, suffix=None):
     # 连接服务器
     ssh.connect(hostname=desktop.server, port=desktop.port, username=desktop.user, password=desktop.server_password)
     # 执行命令
-    stdin, stdout, stderr = ssh.exec_command('cat {}'.format(file_name))
+    stdin, stdout, stderr = ssh.exec_command('cd desktop && cat {}'.format(file_name))
     # 获取结果
     result = stdout.read().decode()
 
@@ -106,7 +107,7 @@ def file_remove(desktop_id, filename, suffix=None):
     # 连接服务器
     ssh.connect(hostname=desktop.server, port=desktop.port, username=desktop.user, password=desktop.server_password)
 
-    ssh.exec_command('rm {}'.format(file_name))
+    ssh.exec_command('cd desktop && rm {}'.format(file_name))
 
     ssh.close()
 
@@ -136,7 +137,7 @@ def file_rename(desktop_id, filename, suffix=None):
     # 连接服务器
     ssh.connect(hostname=desktop.server, port=desktop.port, username=desktop.user, password=desktop.server_password)
     # 执行命令
-    ssh.exec_command('mv {0} {1}'.format(file_name, name))
+    ssh.exec_command('cd desktop && mv {0} {1}'.format(file_name, name))
 
     # 关闭连接
     ssh.close()
@@ -156,7 +157,7 @@ def file_rename_no_suffix(desktop_id, filename, new_name):
     # 连接服务器
     ssh.connect(hostname=desktop.server, port=desktop.port, username=desktop.user, password=desktop.server_password)
     # 执行命令
-    ssh.exec_command('mv {0} {1}'.format(filename, new_name))
+    ssh.exec_command('cd desktop && mv {0} {1}'.format(filename, new_name))
 
     # 关闭连接
     ssh.close()
@@ -180,7 +181,7 @@ def file_add(desktop_id):
     # 连接服务器
     ssh.connect(hostname=desktop.server, port=desktop.port, username=desktop.user, password=desktop.server_password)
     # 执行命令
-    ssh.exec_command('echo '' > {}'.format(name))
+    ssh.exec_command('cd desktop && echo '' > {}'.format(name))
 
     ssh.close()
 
@@ -210,7 +211,7 @@ def file_change(desktop_id, filename, suffix=None):
     # 连接服务器
     ssh.connect(hostname=desktop.server, port=desktop.port, username=desktop.user, password=desktop.server_password)
     # 执行命令
-    ssh.exec_command('mv {0} {1}'.format(file_name, name))
+    ssh.exec_command('cd desktop && mv {0} {1}'.format(file_name, name))
 
     # 关闭连接
     ssh.close()
@@ -230,7 +231,7 @@ def file_change_no_suffix(desktop_id, filename, new_name):
     # 连接服务器
     ssh.connect(hostname=desktop.server, port=desktop.port, username=desktop.user, password=desktop.server_password)
     # 执行命令
-    ssh.exec_command('mv {0} {1}'.format(filename, new_name))
+    ssh.exec_command('cd desktop && mv {0} {1}'.format(filename, new_name))
 
     # 关闭连接
     ssh.close()

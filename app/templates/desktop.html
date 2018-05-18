@@ -27,9 +27,9 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                <a href="{{ url_for('panel.file_cat', desktop_id=desktop_id, filename = file[3], suffix = file[4]) }}"><button type="button" class="btn btn-info">查看</button></a>
-                               <a data-toggle="collapse" href="#rename{{ file[3] }}"><button type="button" class="btn btn-turquoise">重命</button></a>
+                               <a data-toggle="collapse" href="#rename{{ file[3] }}"><button type="button" class="btn btn-turquoise">修改</button></a>
 
-                                    <a href="{{ url_for('panel.file_rename', desktop_id=desktop_id, filename = file[3], suffix = file[4]) }}"><button type="button" class="btn btn-success">修改</button></a>
+{#                                    <a href="{{ url_for('panel.file_rename', desktop_id=desktop_id, filename = file[3], suffix = file[4]) }}"><button type="button" class="btn btn-success">修改</button></a>#}
                                     <a href="{{ url_for('panel.file_remove', desktop_id=desktop_id, filename = file[3], suffix = file[4]) }}"><button type="button" class="btn btn-gray">删除</button></a>
                             </div>
                             <div class="panel-body">
